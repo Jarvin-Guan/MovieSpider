@@ -8,4 +8,4 @@ COPY . /usr/src/app
 
 EXPOSE 8000
 
-ENTRYPOINT node server.js
+ENTRYPOINT node index.js

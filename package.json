@@ -1,13 +1,16 @@
 {
-  "name": "node-docker-example",
+  "name": "moviespider",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "jarvin",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "superagent": "^1.7.2"
+  }
 }
