@@ -13,7 +13,7 @@ var server=http.createServer(function(req,res)
 })
 
 server.listen(8000,function(){
-    console.log('Docker DEMO with node1');
+    console.log('Docker DEMO with node2');
 })/**
  * Created by Jarvin-Guan on 16/2/19.
  */
