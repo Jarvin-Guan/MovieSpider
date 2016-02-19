@@ -4,7 +4,7 @@ var server=http.createServer(function(req,res)
     res.writeHead(200,{
         'Content-Type':'text/plain'
     })
-    res.end('Head World!jarvin tt '+temp);
+    res.end('Hello');
 })
 
 server.listen(8000,function(){
