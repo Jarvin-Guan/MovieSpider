@@ -1,7 +1,6 @@
 var request=require('superagent');
 var http = require('http');
 
-const hostname = 'localhost';
 const port = 8000;
 
 http.createServer((req, res) => {
@@ -13,6 +12,6 @@ request
         res.end(r.text);
     })
 
-}).listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname}:${port}/`);
+}).listen(port, () => {
+    console.log(`Server running at http://localhost:${port}/`);
 });
