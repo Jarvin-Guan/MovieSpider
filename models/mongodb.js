@@ -1,5 +1,6 @@
 
 var mongoose = require('mongoose');
+var fs=require('fs');
 
 function getAllFiles(dir, callback) {
     var filesArr = [];
