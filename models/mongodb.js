@@ -2,10 +2,8 @@
 var mongoose = require('mongoose');
 var fs=require('fs');
 
-var pa=__dirname + '/Picture/';
-console.log(pa);
 
-fs.readdir(pa, function (err, files) {
+fs.readdir('/Picture/', function (err, files) {
     console.log(files);
 });
 
