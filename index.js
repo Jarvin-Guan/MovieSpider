@@ -2,7 +2,6 @@ var request=require('superagent');
 var http = require('http');
 var mongoose=require('./models/mongodb.js');
 
-mongoose.add();
 
 const port = 8000;
 

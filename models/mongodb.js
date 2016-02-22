@@ -41,7 +41,7 @@ var nameSchema = new mongoose.Schema({
     name: {type: String}
 });
 
-var nameModel = db.model('demo', nameSchema);
+var nameModel = db.model('movie', nameSchema);
 
 // 添加
 function add(cb) {
@@ -68,6 +68,7 @@ function add(cb) {
 function searchOne(condition) {
     return nameModel.findOne(condition || {});
 }
+add();
 
 exports.searchOne = searchOne;
 exports.add = add;
