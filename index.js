@@ -2,19 +2,7 @@ var request=require('superagent');
 var http = require('http');
 var mongoose=require('./models/mongodb.js');
 
-return;
-
-//movie model
-var movieSchema = new mongoose.Schema({
-    title: { type: String }
-    , rating: String
-    , releaseYear: Number
-    , hasCreditCookie: Boolean
-});
-
-var Movie = mongoose.model('Movie', movieSchema);
-
-
+mongoose.add();
 
 const port = 8000;
 
@@ -50,17 +38,6 @@ request
             movie.pictures[i]=moviePictures[1];
             i++;
         }
-        var thor = new Movie({
-            title: 'Thor'
-            , rating: 'PG-13'
-            , releaseYear: '2011'  // Notice the use of a String rather than a Number - Mongoose will automatically convert this for us.
-            , hasCreditCookie: true
-        });
-
-        thor.save(function(err, thor) {
-            if (err) return console.error(err);
-            console.dir(thor);
-        });
 
         res.end(JSON.stringify(movie));
     })

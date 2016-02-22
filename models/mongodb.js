@@ -47,7 +47,7 @@ var nameModel = db.model('demo', nameSchema);
 function add(cb) {
     // 判断是否存在
     searchOne({
-        name: 'xinshangshangxin'
+        name: 'jarvin'
     }).then(function(data) {
         if (data) {
             console.log('已经存在');
@@ -56,7 +56,7 @@ function add(cb) {
         else {
             //  添加一条
             nameModel.create({
-                name: 'xinshangshangxin'
+                name: 'jarvin'
             }, function(err, doc) {
                 cb && cb();
             });
