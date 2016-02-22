@@ -1,15 +1,33 @@
 
 var mongoose = require('mongoose');
 
+function getAllFiles(dir, callback) {
+    var filesArr = [];
+    dir = ///$/.test(dir) ? dir : dir + '/';
+        (function dir(dirpath, fn) {
+            var files = Sys.fs.readdirSync(dirpath);
+            exports.async(files, function (item, next) {
+                var info = Sys.fs.statSync(dirpath + item);
+                if (info.isDirectory()) {
+                    dir(dirpath + item + '/', function () {
+                        next();
+                    });
+                } else {
+                    filesArr.push(dirpath + item);
+                    callback && callback(dirpath + item);
+                    next();
+                }
+            }, function (err) {
+                !err && fn && fn();
+            });
+        })(dir);
+    return filesArr;
+}
+
+console.log(getAllFiles('/Picture'));
+
 // 本地 mongodb链接地址
 var mongodbUri = 'mongodb://127.0.0.1:27017/DaoCloudDemo';
-
-try {
-    // coding 链接地址
-    mongodbUri = JSON.parse(process.env.VCAP_SERVICES).mongodb[0].credentials.uri;
-}
-catch (e) {
-}
 
 try {
     // 链接格式:    mongodb://user:pass@localhost:port/database
