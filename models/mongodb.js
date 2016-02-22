@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var fs=require('fs');
 
 
-fs.readdir('/Picture/', function (err, files) {
+fs.readdir('/Picture', function (err, files) {
     console.log(files);
 });
 
@@ -67,7 +67,6 @@ function add(cb) {
 function searchOne(condition) {
     return nameModel.findOne(condition || {});
 }
-add();
 
 exports.searchOne = searchOne;
 exports.add = add;
