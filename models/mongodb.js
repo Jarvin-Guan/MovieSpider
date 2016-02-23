@@ -1,11 +1,4 @@
-
 var mongoose = require('mongoose');
-var fs=require('fs');
-
-
-fs.readdir('/Picture', function (err, files) {
-    console.log(files);
-});
 
 // 本地 mongodb链接地址
 var mongodbUri = 'mongodb://127.0.0.1:27017/DaoCloudDemo';
