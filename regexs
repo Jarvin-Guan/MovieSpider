@@ -2,3 +2,4 @@
 图片列表:"filmpic\d+"(?:(?!\ssrc)[\s\S])+\ssrc="([^"]+)"
 模块：<li\s+class="divider-vertical"></li><li\s*><a\s+href="(htt[^"]+)
 下一页：<a\s+href="([^"]+)">下一页
+获取电影列表：<td>\s+<i\s+class="icon-th[\s\S]+?<a\s+href="([^"]+)"\s+ti
