@@ -110,7 +110,6 @@ ee.on('MovieWrite', function(moviesLink,modelHtml) {
             console.log("在做入库:"+movie.name+".  " +"下载地址:"+movie.downloadlink);
             mongoose.add(movie);
         }
-        return;
         ee.emit('NextPage', modelHtml);
     })
 });
