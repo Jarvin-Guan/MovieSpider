@@ -6,8 +6,9 @@ var EventEmitter=require('events').EventEmitter;
 var ee=new EventEmitter();
 
 const MovieModels=new Array();
+Currentmodel="";
 const port = 8000;
-//var mongoose=require('./models/mongodb.js');
+var mongoose=require('./models/mongodb.js');
 
 function GetHtmlCode(url){
     var dfd = Q.defer();
@@ -41,23 +42,41 @@ function MatchModels(isEmitNextModel)
 
 ee.on('NextModel', function() {
     var modelLink=MovieModels.shift();
+    Currentmodel=modelLink;
     co(function *() {
         var htmltext=yield GetHtmlCode(modelLink);
         ee.emit('MovieMaches', htmltext);
     });
 });
 
-ee.on('MovieMaches', function(modelHtml) {
+ee.on('NextPage', function(PageHtml) {
+    var nextpageindex=/(?:<a\s+href="([^"]+)">下一页|$)/.exec(PageHtml)[1];
+
+    if(nextpageindex!="")
+    {
+        co(function *() {
+            var nexturl=/[\s\S]+\//.exec(Currentmodel)[0]+nextpageindex;
+            var htmltext=yield GetHtmlCode(nexturl);
+            ee.emit('MovieMaches', htmltext);
+        });
+    }
+    else
+    {
+        ee.emit('NextModel');
+    }
+});
+
+ee.on('MovieMaches', function(PageHtml) {
     var movieLinklRex=new RegExp("<td>\\s+<i\\s+class=\"icon-th[\\s\\S]+?<a\\s+href=\"([^\"]+)\"\\s+ti","g");
     var matches,linkList=new Array();
 
-    while (matches = movieLinklRex.exec(modelHtml)) {
+    while (matches = movieLinklRex.exec(PageHtml)) {
         linkList.push(matches[1]);
     }
-    ee.emit('MovieWrite', linkList);
+    ee.emit('MovieWrite', linkList,PageHtml);
 });
 
-ee.on('MovieWrite', function(moviesLink) {
+ee.on('MovieWrite', function(moviesLink,modelHtml) {
     co(function *(){
         for(var index in moviesLink) {
             var modelDetailHtml = yield GetHtmlCode(moviesLink[index]);
@@ -76,7 +95,7 @@ ee.on('MovieWrite', function(moviesLink) {
             movie.showtime = /(?:(?:上映日期:|首播:)\s*(\d*-?\d*-?\d*)|$)/gi.exec(modelDetailHtml)[1];
             movie.duringtime = /(?:[\s\S]长:([^<]+)[\s\S]+?|$)/gi.exec(modelDetailHtml)[1];
             movie.summary = /(?:剧情简介[\s\S]+?([\u4e00-\u9fa5][^<]+)|$)/gi.exec(modelDetailHtml)[1];
-
+            movie.downloadlink=/(?:<a\s+class="label\s*label-warning(?:(?!href)[\s\S])+href="(ed2k[^"]+)|$)/gi.exec(modelDetailHtml)[1];
             var picRex = /"filmpic\d+"(?:(?!\ssrc)[\s\S])+\ssrc="([^"]+)"/gi;
             movie.pictures = new Array();
             var i = 0;
@@ -88,12 +107,12 @@ ee.on('MovieWrite', function(moviesLink) {
                 movie.pictures[i] = moviePictures[1];
                 i++;
             }
-            console.log(movie.name);
+            console.log("在做入库:"+movie.name+".  " +"下载地址:"+movie.downloadlink);
+            mongoose.add(movie);
         }
-        ee.emit('NextModel');
+        return;
+        ee.emit('NextPage', modelHtml);
     })
-
-
 });
 
 http.createServer((req, res) => {

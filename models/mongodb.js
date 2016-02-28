@@ -29,28 +29,36 @@ console.log(mongodbUri);
 // 链接mongodb
 var db = mongoose.connect(mongodbUri);
 
-var nameSchema = new mongoose.Schema({
-    name: {type: String}
+var movieSchema = new mongoose.Schema({
+    name: {type: String},
+    "title": {type: String},
+    "director": {type: String},
+    "actor": {type: String},
+    "region": {type: String},
+    "language": {type: String},
+    "duringtime": {type: String},
+    "showtime": {type: String},
+    "summary": {type: String},
+    "pictures": {type: Array},
+    "downloadlink":{type:String}
 });
 
-var nameModel = db.model('movie', nameSchema);
+var movieModel = db.model('movie', movieSchema);
 
 // 添加
-function add(cb) {
+function add(movie) {
     // 判断是否存在
     searchOne({
-        name: 'jarvin'
+        name: movie.name
     }).then(function(data) {
         if (data) {
-            console.log('已经存在');
-            cb && cb();
+            console.log('已经存在'+movie.name);
+            return false;
         }
         else {
             //  添加一条
-            nameModel.create({
-                name: 'jarvin'
-            }, function(err, doc) {
-                cb && cb();
+            movieModel.create(movie, function(err, doc) {
+                return true;
             });
         }
     });
@@ -58,7 +66,7 @@ function add(cb) {
 
 // 按条件查找
 function searchOne(condition) {
-    return nameModel.findOne(condition || {});
+    return movieModel.findOne(condition || {});
 }
 
 exports.searchOne = searchOne;
