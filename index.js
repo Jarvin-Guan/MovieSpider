@@ -61,24 +61,21 @@ ee.on('MovieWrite', function(moviesLink) {
     co(function *(){
         for(var index in moviesLink) {
             var modelDetailHtml = yield GetHtmlCode(moviesLink[index]);
-            var detialRex = /<!-- 标题 --><h3>([^《]+《([^》]+)》[^<]+)[\s\S]+?(?:导演:([^<]+))?[\s\S]+?(?:主演:([^<]+))?[\s\S]+?制片国家\/地区:(?:(?![\u4e00-\u9fa5])[\s\S])+([\u4e00-\u9fa5]+)[\s\S]+?(?:[\s\S]+?语言:([^<]+)[\s\S]+?[\s\S]+?)?(?:上映日期:|首播:)?\s*(\d*-?\d*-?\d*)[\s\S]+?(?:[\s\S]长:([^<]+)[\s\S]+?)?剧情简介[\s\S]+?([\u4e00-\u9fa5][^<]+)/;
-            var isMovieRegex=/摘要/;
+            var isMovieRegex=/简介/;
             if(!isMovieRegex.test(modelDetailHtml))
             {
                 continue;
             }
-            //console.log(modelDetailHtml);
-            var movieItems = detialRex.exec(modelDetailHtml);
             var movie = new Object();
-            movie.title = movieItems[1];
-            movie.name = movieItems[2];
-            movie.director = movieItems[3];
-            movie.actor = movieItems[4];
-            movie.region = movieItems[5];
-            movie.language = movieItems[6];
-            movie.showtime = movieItems[7];
-            movie.duringtime = movieItems[8];
-            movie.summary = movieItems[9];
+            movie.title = /<!-- 标题 --><h3>([^《]+《([^》]+)》[^<]+)[\s\S]+?/gi.exec(modelDetailHtml)[1];
+            movie.name = /<!-- 标题 --><h3>([^《]+《([^》]+)》[^<]+)[\s\S]+?/gi.exec(modelDetailHtml)[2];
+            movie.director = /(?:导\s*演:?([^<]+)<|$)/gi.exec(modelDetailHtml)[1];
+            movie.actor = /(?:主\s*演:?([^<]+)<|$)/gi.exec(modelDetailHtml)[1];
+            movie.region = /(?:制片国家\/地区:?(?:(?![\u4e00-\u9fa5])[\s\S])+([\u4e00-\u9fa5]+)|$)/gi.exec(modelDetailHtml)[1];
+            movie.language = /(?:语\s*言:?(?:(?![\u4e00-\u9fa5])[\s\S])+([\u4e00-\u9fa5]+)|$)/gi.exec(modelDetailHtml)[1];
+            movie.showtime = /(?:(?:上映日期:|首播:)\s*(\d*-?\d*-?\d*)|$)/gi.exec(modelDetailHtml)[1];
+            movie.duringtime = /(?:[\s\S]长:([^<]+)[\s\S]+?|$)/gi.exec(modelDetailHtml)[1];
+            movie.summary = /(?:剧情简介[\s\S]+?([\u4e00-\u9fa5][^<]+)|$)/gi.exec(modelDetailHtml)[1];
 
             var picRex = /"filmpic\d+"(?:(?!\ssrc)[\s\S])+\ssrc="([^"]+)"/gi;
             movie.pictures = new Array();
