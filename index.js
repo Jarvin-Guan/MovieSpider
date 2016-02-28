@@ -10,6 +10,7 @@ Currentmodel="";
 const port = 8000;
 var mongoose=require('./models/mongodb.js');
 
+
 function GetHtmlCode(url){
     var dfd = Q.defer();
     request
@@ -79,8 +80,9 @@ ee.on('MovieMaches', function(PageHtml) {
 ee.on('MovieWrite', function(moviesLink,modelHtml) {
     co(function *(){
         for(var index in moviesLink) {
+            console.log("开始处理:"+moviesLink[index]);
             var modelDetailHtml = yield GetHtmlCode(moviesLink[index]);
-            var isMovieRegex=/简介/;
+            var isMovieRegex=/label\s*label-warning/;
             if(!isMovieRegex.test(modelDetailHtml))
             {
                 continue;
@@ -95,7 +97,7 @@ ee.on('MovieWrite', function(moviesLink,modelHtml) {
             movie.showtime = /(?:(?:上映日期:|首播:)\s*(\d*-?\d*-?\d*)|$)/gi.exec(modelDetailHtml)[1];
             movie.duringtime = /(?:[\s\S]长:([^<]+)[\s\S]+?|$)/gi.exec(modelDetailHtml)[1];
             movie.summary = /(?:剧情简介[\s\S]+?([\u4e00-\u9fa5][^<]+)|$)/gi.exec(modelDetailHtml)[1];
-            movie.downloadlink=/(?:<a\s+class="label\s*label-warning(?:(?!href)[\s\S])+href="(ed2k[^"]+)|$)/gi.exec(modelDetailHtml)[1];
+            movie.downloadlink=/(?:<a\s+class="label\s*label-warning(?:(?!href)[\s\S])+href="((?:ed2k|ftp)[^"]+)|$)/gi.exec(modelDetailHtml)[1];
             var picRex = /"filmpic\d+"(?:(?!\ssrc)[\s\S])+\ssrc="([^"]+)"/gi;
             movie.pictures = new Array();
             var i = 0;
@@ -119,6 +121,8 @@ http.createServer((req, res) => {
 {
     return;
 }
+var a=[];
+a.push("http://www.bd-film.com/zx/19236.htm");
 MatchModels(true);
 res.end(JSON.stringify("ok"));
 }).listen(port, () => {
