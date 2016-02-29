@@ -24,7 +24,7 @@ function GetHtmlCode(url){
 function MatchModels(isEmitNextModel)
 {
     co(function *(){
-        var htmltext=yield GetHtmlCode("http://www.bd-film.com");
+        var htmltext=yield GetHtmlCode("http://www.bd-film.com/zx/index_114.htm");
         var movieModelRex=new RegExp("<li\\s+class=\"divider-vertical\"></li><li\\s*><a\\s+href=\"(htt[^\"]+)","g");
         var matches;
 
@@ -53,7 +53,7 @@ ee.on('NextModel', function() {
 ee.on('NextPage', function(PageHtml) {
     var nextpageindex=/(?:<a\s+href="([^"]+)">下一页|$)/.exec(PageHtml)[1];
 
-    if(nextpageindex!="")
+    if(nextpageindex != "" && nextpageindex != undefined && nextpageindex != null)
     {
         co(function *() {
             var nexturl=/[\s\S]+\//.exec(Currentmodel)[0]+nextpageindex;
