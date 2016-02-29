@@ -88,8 +88,8 @@ ee.on('MovieWrite', function(moviesLink,modelHtml) {
                 continue;
             }
             var movie = new Object();
-            movie.title = /<!-- 标题 --><h3>([^《]+《([^》]+)》[^<]+)[\s\S]+?/gi.exec(modelDetailHtml)[1];
-            movie.name = /<!-- 标题 --><h3>([^《]+《([^》]+)》[^<]+)[\s\S]+?/gi.exec(modelDetailHtml)[2];
+            movie.title = /(?:<!--\s*标题\s*--><h3>([^《\[]*(?:\[|《)([^\]》]+)[^<]+)<\/h3>|$)/.exec(modelDetailHtml)[1];
+            movie.name = /(?:<!--\s*标题\s*--><h3>([^《\[]*(?:\[|《)([^\]》]+)[^<]+)<\/h3>|$)/.exec(modelDetailHtml)[2];
             movie.director = /(?:导\s*演:?([^<]+)<|$)/gi.exec(modelDetailHtml)[1];
             movie.actor = /(?:主\s*演:?([^<]+)<|$)/gi.exec(modelDetailHtml)[1];
             movie.region = /(?:制片国家\/地区:?(?:(?![\u4e00-\u9fa5])[\s\S])+([\u4e00-\u9fa5]+)|$)/gi.exec(modelDetailHtml)[1];
