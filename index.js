@@ -24,12 +24,18 @@ function GetHtmlCode(url){
 function MatchModels(isEmitNextModel)
 {
     co(function *(){
-        var htmltext=yield GetHtmlCode("http://www.bd-film.com/zx/index_114.htm");
-        var movieModelRex=new RegExp("<li\\s+class=\"divider-vertical\"></li><li\\s*><a\\s+href=\"(htt[^\"]+)","g");
+        var originurl="http://www.bd-film.com:80/dh/index.htm";
+        var htmltext=yield GetHtmlCode(originurl);
+        var movieModelRex=new RegExp("<li\\s+class=\"divider-vertical\"></li><li\\s*(?:class=\"active\")?\\s*?><a\\s+href=\"(htt[^\"]+)","g");
         var matches;
 
         while (matches = movieModelRex.exec(htmltext)) {
             MovieModels.push(matches[1]);
+        }
+        var index=MovieModels.indexOf(originurl);
+        for(i=0;i<index;i++)
+        {
+            MovieModels.shift();
         }
     }).then(function()
     {
@@ -121,8 +127,6 @@ http.createServer((req, res) => {
 {
     return;
 }
-var a=[];
-a.push("http://www.bd-film.com/zx/19236.htm");
 MatchModels(true);
 res.end(JSON.stringify("ok"));
 }).listen(port, () => {
