@@ -46,19 +46,19 @@ var movieSchema = new mongoose.Schema({
 var movieModel = db.model('movie', movieSchema);
 
 // 添加
-function add(movie) {
+function add(movie,callback) {
     // 判断是否存在
     searchOne({
         name: movie.name
     }).then(function(data) {
         if (data) {
             console.log('已经存在'+movie.name);
-            return false;
+            callback(false);
         }
         else {
             //  添加一条
             movieModel.create(movie, function(err, doc) {
-                return true;
+                callback(true,doc);
             });
         }
     });

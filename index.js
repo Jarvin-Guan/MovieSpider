@@ -4,11 +4,29 @@ var co=require('co');
 var Q = require("q");
 var EventEmitter=require('events').EventEmitter;
 var ee=new EventEmitter();
+var schedule = require("node-schedule");
+
 
 const MovieModels=new Array();
 Currentmodel="";
 const port = 8000;
+MatchFlaseTime=0;
+//容错次数
+falsetime=3;
 var mongoose=require('./models/mongodb.js');
+
+//定时任务
+var rule = new schedule.RecurrenceRule();
+
+rule.minute = 59;
+
+var j = schedule.scheduleJob(rule, function(){
+
+    if(MovieModels.length==0)
+    {
+        MatchModels(true);
+    }
+});
 
 
 function GetHtmlCode(url){
@@ -24,7 +42,7 @@ function GetHtmlCode(url){
 function MatchModels(isEmitNextModel)
 {
     co(function *(){
-        var originurl="http://www.bd-film.com:80/dh/index.htm";
+        var originurl="http://www.bd-film.com/zx/index.htm";
         var htmltext=yield GetHtmlCode(originurl);
         var movieModelRex=new RegExp("<li\\s+class=\"divider-vertical\"></li><li\\s*(?:class=\"active\")?\\s*?><a\\s+href=\"(htt[^\"]+)","g");
         var matches;
@@ -50,10 +68,17 @@ function MatchModels(isEmitNextModel)
 ee.on('NextModel', function() {
     var modelLink=MovieModels.shift();
     Currentmodel=modelLink;
-    co(function *() {
-        var htmltext=yield GetHtmlCode(modelLink);
-        ee.emit('MovieMaches', htmltext);
-    });
+    if(Currentmodel!=null)
+    {
+        co(function *() {
+            var htmltext=yield GetHtmlCode(modelLink);
+            ee.emit('MovieMaches', htmltext);
+        });
+    }
+    else
+    {
+        console.log("抓取完成,等待下一轮");
+    }
 });
 
 ee.on('NextPage', function(PageHtml) {
@@ -86,6 +111,10 @@ ee.on('MovieMaches', function(PageHtml) {
 ee.on('MovieWrite', function(moviesLink,modelHtml) {
     co(function *(){
         for(var index in moviesLink) {
+            if(MatchFlaseTime>=3)
+            {
+                break;
+            }
             console.log("开始处理:"+moviesLink[index]);
             var modelDetailHtml = yield GetHtmlCode(moviesLink[index]);
             var isMovieRegex=/label\s*label-warning/;
@@ -116,9 +145,26 @@ ee.on('MovieWrite', function(moviesLink,modelHtml) {
                 i++;
             }
             console.log("在做入库:"+movie.name+".  " +"下载地址:"+movie.downloadlink);
-            mongoose.add(movie);
+            mongoose.add(movie,function(result,doc){
+                if(result==false)
+                {
+                    MatchFlaseTime=MatchFlaseTime+1;
+                }
+                else
+                {
+                    MatchFlaseTime=0;
+                }
+            });
         }
-        ee.emit('NextPage', modelHtml);
+        if(MatchFlaseTime>=falsetime)
+        {
+            MatchFlaseTime=0;
+            ee.emit('NextModel', modelHtml);
+        }
+        else
+        {
+            ee.emit('NextPage', modelHtml);
+        }
     })
 });
 

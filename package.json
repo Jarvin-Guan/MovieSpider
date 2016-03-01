@@ -13,6 +13,7 @@
   "dependencies": {
     "co": "^4.6.0",
     "mongoose": "^4.4.4",
+    "node-schedule": "^1.0.0",
     "q": "^1.4.1",
     "superagent": "^1.7.2"
   }
